@@ -1,3 +1,4 @@
-results/
+results/Pong-v0/vpg*
+results/train_out.log
 archive/
 __pycache__/

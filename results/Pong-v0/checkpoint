@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/ubuntu/pongfrompixels/results/Pong-v0/model-320"
+all_model_checkpoint_paths: "/home/ubuntu/pongfrompixels/results/Pong-v0/model-320"
