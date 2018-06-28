@@ -168,7 +168,8 @@ def train(env_name='Pong-v0',
 
                     observations, actions, rewards, batch_advantages = [], [], [], []
 
-                if episode_number % batch_size == 0:
+                # TODO
+                if episode_number % 100 == 0:
                     model.save(session)
 
                 # reset
