@@ -109,7 +109,7 @@ def train(env_name='Pong-v0',
 
         observation = env.reset()
         prev_frame = None
-        observations, actions, rewards, batch_advantages = [], [], [], []
+        observations, actions, rewards, batch_q_n = [], [], [], []
         episode_number = 0
         running_reward = None
         reward_sum = 0
@@ -139,17 +139,7 @@ def train(env_name='Pong-v0',
                     q_n = np.concatenate([
                             [sum_discounted_rewards(rewards, gamma)] * len(rewards)])
 
-                if nn_baseline:
-                    # TODO: Compute Baselines
-                    pass
-                else:
-                    advantages = q_n.copy()
-
-                if normalize_advantages:
-                    advantages = (advantages - np.mean(advantages)) / (np.std(advantages) + 1e-8)
-                    logger.debug('advantages: {}'.format(advantages))
-                
-                batch_advantages.append(advantages)
+                batch_q_n.append(q_n)
 
                 running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
                 running_reward_summary = tf.Summary(value=[tf.Summary.Value(tag="running_reward", simple_value=running_reward)])
@@ -159,6 +149,16 @@ def train(env_name='Pong-v0',
                 if episode_number % batch_size == 0:
                     step += 1
 
+                    if nn_baseline:
+                        # TODO: Compute Baselines
+                        pass
+                    else:
+                        advantages = batch_q_n.copy()
+
+                    if normalize_advantages:
+                        advantages = (advantages - np.mean(advantages)) / (np.std(advantages) + 1e-8)
+                        logger.debug('advantages: {}'.format(advantages))
+
                     loss, training_scalar, histogram_merged = model.update(session, observations, actions, advantages, keep_prob)
 
                     file_writer.add_summary(training_scalar, step)
@@ -166,7 +166,7 @@ def train(env_name='Pong-v0',
 
                     logger.info("Epoch %3d Loss %f" %(step, loss))
 
-                    observations, actions, rewards, batch_advantages = [], [], [], []
+                    observations, actions, rewards, batch_q_n = [], [], [], []
 
                 # TODO
                 if episode_number % 100 == 0:
